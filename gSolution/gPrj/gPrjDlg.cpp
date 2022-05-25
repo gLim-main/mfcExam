@@ -11,6 +11,7 @@
 #define new DEBUG_NEW
 #endif
 
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 
 // 응용 프로그램 정보에 사용되는 CAboutDlg 대화 상자입니다.
 
@@ -65,6 +66,7 @@ BEGIN_MESSAGE_MAP(CgPrjDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BTN_DLG, &CgPrjDlg::OnBnClickedBtnDlg)
+	ON_WM_DESTROY()
 END_MESSAGE_MAP()
 
 
@@ -100,6 +102,9 @@ BOOL CgPrjDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	m_pDlgImage = new CDlgImage;
+	m_pDlgImage->Create(IDD_DLGIMAGE, this);
+	m_pDlgImage->ShowWindow(SW_SHOW);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -157,5 +162,20 @@ HCURSOR CgPrjDlg::OnQueryDragIcon()
 
 void CgPrjDlg::OnBnClickedBtnDlg()
 {
-	// gitTest
+	m_pDlgImage->ShowWindow(SW_SHOW);
+}
+
+
+void CgPrjDlg::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+
+	delete m_pDlgImage;
+}
+
+#include <iostream>
+void CgPrjDlg::callFunc(int n)
+{
+//	int nData = n;
+	std::cout << n << std::endl;
 }
