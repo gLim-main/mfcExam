@@ -65,8 +65,8 @@ BEGIN_MESSAGE_MAP(CgPrjDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BTN_DLG, &CgPrjDlg::OnBnClickedBtnDlg)
 	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDC_BTN_TEST, &CgPrjDlg::OnBnClickedBtnTest)
 END_MESSAGE_MAP()
 
 
@@ -102,9 +102,16 @@ BOOL CgPrjDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	//ShowWindow(SW_SHOWMAXIMIZED);
+	MoveWindow(0, 0, 1280, 800);
 	m_pDlgImage = new CDlgImage;
 	m_pDlgImage->Create(IDD_DLGIMAGE, this);
 	m_pDlgImage->ShowWindow(SW_SHOW);
+
+	m_pDlgImgResult = new CDlgImage;
+	m_pDlgImgResult->Create(IDD_DLGIMAGE, this);
+	m_pDlgImgResult->ShowWindow(SW_SHOW);
+	m_pDlgImgResult->MoveWindow(640, 0, 640, 480);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -160,10 +167,10 @@ HCURSOR CgPrjDlg::OnQueryDragIcon()
 
 
 
-void CgPrjDlg::OnBnClickedBtnDlg()
-{
-	m_pDlgImage->ShowWindow(SW_SHOW);
-}
+//void CgPrjDlg::OnBnClickedBtnDlg()
+//{
+//	m_pDlgImage->ShowWindow(SW_SHOW);
+//}
 
 
 void CgPrjDlg::OnDestroy()
@@ -176,6 +183,33 @@ void CgPrjDlg::OnDestroy()
 #include <iostream>
 void CgPrjDlg::callFunc(int n)
 {
-//	int nData = n;
 	std::cout << n << std::endl;
+}
+
+void CgPrjDlg::OnBnClickedBtnTest()
+{
+	unsigned char* fm = (unsigned char*)m_pDlgImage->m_image.GetBits();
+	int nWidth = m_pDlgImage->m_image.GetWidth();
+	int nHeight = m_pDlgImage->m_image.GetHeight();
+	int nPitch = m_pDlgImage->m_image.GetPitch();
+
+	for (int k = 0; k < 100; k++) {
+		int x = rand() % nWidth;
+		int y = rand() % 480;
+		fm[y * nPitch + x] = 0;
+		//fm[y * nPitch + x+1] = 0;
+		//fm[y+1 * nPitch + x] = 0;
+		//fm[y+1 * nPitch + x+1] = 0;
+	}
+	m_pDlgImage->Invalidate();
+
+	int nSum = 0;
+	for (int j = 0; j < nHeight; j++) {
+		for (int i = 0; i < nWidth; i++) {
+			if (fm[j*nPitch + i] == 0) {
+				nSum++;
+			}
+		}
+	}
+	std::cout << nSum << std::endl;
 }

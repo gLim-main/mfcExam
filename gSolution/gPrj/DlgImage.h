@@ -11,8 +11,8 @@ public:
 	CDlgImage(CWnd* pParent = NULL);   // 표준 생성자입니다.
 	virtual ~CDlgImage();
 
-
 	CWnd* m_pParent;
+	CImage m_image;
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -25,4 +25,10 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedBtnUpParent();
+	virtual BOOL OnInitDialog();
+
+private:
+	void InitImage();
+public:
+	afx_msg void OnPaint();
 };
