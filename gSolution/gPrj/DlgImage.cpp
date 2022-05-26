@@ -84,4 +84,20 @@ void CDlgImage::OnPaint()
 					   // 그리기 메시지에 대해서는 CDialogEx::OnPaint()을(를) 호출하지 마십시오.
 	if (m_image)
 		m_image.Draw(dc, 0, 0);
+
+	drawData(&dc);
+}
+
+void CDlgImage::drawData(CDC* pDC)
+{
+	CRect rect;
+	CPen pen;
+	pen.CreatePen(PS_SOLID, 5, RGB(0xff, 0, 0));
+	CPen* pOldPen = pDC->SelectObject(&pen);
+	for (int i = 0; i < m_nDataCount; i++) {
+		rect.SetRect(m_ptData[i], m_ptData[i]);
+		rect.InflateRect(2,2);
+		pDC->Ellipse(rect);
+	}
+	pDC->SelectObject(pOldPen);
 }

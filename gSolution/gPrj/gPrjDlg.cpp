@@ -7,6 +7,9 @@
 #include "gPrjDlg.h"
 #include "afxdialogex.h"
 
+#include <iostream>
+using namespace std;
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -177,10 +180,10 @@ void CgPrjDlg::OnDestroy()
 {
 	CDialogEx::OnDestroy();
 
-	delete m_pDlgImage;
+	if(m_pDlgImage)		delete m_pDlgImage;
+	if(m_pDlgImgResult)	delete m_pDlgImgResult;
 }
 
-#include <iostream>
 void CgPrjDlg::callFunc(int n)
 {
 	std::cout << n << std::endl;
@@ -192,24 +195,31 @@ void CgPrjDlg::OnBnClickedBtnTest()
 	int nWidth = m_pDlgImage->m_image.GetWidth();
 	int nHeight = m_pDlgImage->m_image.GetHeight();
 	int nPitch = m_pDlgImage->m_image.GetPitch();
+	memset(fm, 0xff, nWidth*nHeight);
 
 	for (int k = 0; k < 100; k++) {
 		int x = rand() % nWidth;
-		int y = rand() % 480;
+		int y = rand() % nHeight;
 		fm[y * nPitch + x] = 0;
-		//fm[y * nPitch + x+1] = 0;
-		//fm[y+1 * nPitch + x] = 0;
-		//fm[y+1 * nPitch + x+1] = 0;
+		//m_pDlgImgResult->m_nDataCount = k;
+		//m_pDlgImgResult->m_ptData[k].x = x;
+		//m_pDlgImgResult->m_ptData[k].y = y;
 	}
-	m_pDlgImage->Invalidate();
 
-	int nSum = 0;
+	int nIndex = 0;
 	for (int j = 0; j < nHeight; j++) {
 		for (int i = 0; i < nWidth; i++) {
 			if (fm[j*nPitch + i] == 0) {
-				nSum++;
+				if (m_pDlgImgResult->m_nDataCount < 100) {
+					m_pDlgImgResult->m_ptData[nIndex].x = i;
+					m_pDlgImgResult->m_ptData[nIndex].y = j;
+					m_pDlgImgResult->m_nDataCount = ++nIndex;
+				}
 			}
 		}
 	}
-	std::cout << nSum << std::endl;
+
+	m_pDlgImage->Invalidate();
+	m_pDlgImgResult->Invalidate();
+
 }
