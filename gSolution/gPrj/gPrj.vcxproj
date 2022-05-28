@@ -184,6 +184,7 @@
     <ClInclude Include="DlgImage.h" />
     <ClInclude Include="gPrj.h" />
     <ClInclude Include="gPrjDlg.h" />
+    <ClInclude Include="Process.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -192,6 +193,7 @@
     <ClCompile Include="DlgImage.cpp" />
     <ClCompile Include="gPrj.cpp" />
     <ClCompile Include="gPrjDlg.cpp" />
+    <ClCompile Include="Process.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
