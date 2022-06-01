@@ -73,6 +73,7 @@ BEGIN_MESSAGE_MAP(CgPrjDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_PROCESS, &CgPrjDlg::OnBnClickedBtnProcess)
 	ON_BN_CLICKED(IDC_BTN_MAKE_PATTERN, &CgPrjDlg::OnBnClickedBtnMakePattern)
 	ON_BN_CLICKED(IDC_BTN_GET_DATA, &CgPrjDlg::OnBnClickedBtnGetData)
+	ON_BN_CLICKED(IDC_BTN_THREAD, &CgPrjDlg::OnBnClickedBtnThread)
 END_MESSAGE_MAP()
 
 
@@ -297,4 +298,59 @@ void CgPrjDlg::OnBnClickedBtnGetData()
 	cout << dCenterX << "\t" << dCenterY << endl;
 
 	m_pDlgImage->Invalidate();
+}
+
+void threadProcess(CWnd* pParent, CRect rect, int *nRet)
+{
+	CgPrjDlg *pWnd = (CgPrjDlg*)pParent;
+	*nRet = pWnd->processImg(rect);
+}
+
+void CgPrjDlg::OnBnClickedBtnThread()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	auto start = system_clock::now();
+
+	int nImgSize = 4096 * 4;
+	CRect rect(0, 0, nImgSize, nImgSize);
+	CRect rt[4];
+	int nRet[4];
+	for (int k = 0; k < 4; k++) {
+		rt[k] = rect;
+		rt[k].OffsetRect(nImgSize*(k % 2), nImgSize*int(k / 2));
+	}
+	thread _thread0(threadProcess, this, rt[0], &nRet[0]);
+	thread _thread1(threadProcess, this, rt[1], &nRet[1]);
+	thread _thread2(threadProcess, this, rt[2], &nRet[2]);
+	thread _thread3(threadProcess, this, rt[3], &nRet[3]);
+
+	_thread0.join();
+	_thread1.join();
+	_thread2.join();
+	_thread3.join();
+
+	int nSum;
+	for (int k = 0; k < 4; k++)
+		nSum += nRet[k];
+
+	auto end = system_clock::now();
+	auto millisec = duration_cast<milliseconds>(end - start);
+
+	cout << nSum << "\t" << millisec.count()*0.001 << "sec" << endl;
+
+}
+
+int CgPrjDlg::processImg(CRect rect)
+{
+	auto start = system_clock::now();
+
+	CProcess process;
+	int nTh = 0;
+	int nRet = process.getStarInfo(&m_pDlgImage->m_image, nTh, rect);
+
+	auto end = system_clock::now();
+	auto millisec = duration_cast<milliseconds>(end - start);
+
+	cout << nRet << "\t" << millisec.count()*0.001 << "sec" << endl;
+	return nRet;
 }
