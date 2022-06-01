@@ -71,6 +71,8 @@ BEGIN_MESSAGE_MAP(CgPrjDlg, CDialogEx)
 	ON_WM_DESTROY()
 	ON_BN_CLICKED(IDC_BTN_TEST, &CgPrjDlg::OnBnClickedBtnTest)
 	ON_BN_CLICKED(IDC_BTN_PROCESS, &CgPrjDlg::OnBnClickedBtnProcess)
+	ON_BN_CLICKED(IDC_BTN_MAKE_PATTERN, &CgPrjDlg::OnBnClickedBtnMakePattern)
+	ON_BN_CLICKED(IDC_BTN_GET_DATA, &CgPrjDlg::OnBnClickedBtnGetData)
 END_MESSAGE_MAP()
 
 
@@ -230,9 +232,12 @@ void CgPrjDlg::OnBnClickedBtnTest()
 #include "Process.h"
 #include <chrono>
 #include <thread>
+using namespace std;
+using namespace chrono;
+
 void CgPrjDlg::OnBnClickedBtnProcess()
 {
-	auto start = std::chrono::system_clock::now();
+	auto start = system_clock::now();
 
 	CProcess process;
 	int nTh = 0;
@@ -240,8 +245,56 @@ void CgPrjDlg::OnBnClickedBtnProcess()
 //	Sleep(1000);
 //	std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 	
-	auto end = std::chrono::system_clock::now();
-	auto millisec = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+	auto end = system_clock::now();
+	auto millisec = duration_cast<milliseconds>(end - start);
 
 	cout << nRet << "\t"<< millisec.count()*0.001 << "sec" <<endl;
+}
+
+
+void CgPrjDlg::OnBnClickedBtnMakePattern()
+{
+	unsigned char* fm = (unsigned char*)m_pDlgImage->m_image.GetBits();
+	int nWidth = m_pDlgImage->m_image.GetWidth();
+	int nHeight = m_pDlgImage->m_image.GetHeight();
+	int nPitch = m_pDlgImage->m_image.GetPitch();
+	memset(fm, 0, nWidth*nHeight);
+
+	CRect rect(100, 100, 200, 200);
+	for (int j = rect.top; j < rect.bottom; j++) {
+		for (int i = rect.left; i < rect.right; i++) {
+			fm[j*nPitch + i] = rand()%0xff;
+		}
+	}
+	m_pDlgImage->Invalidate();
+}
+
+
+void CgPrjDlg::OnBnClickedBtnGetData()
+{
+	unsigned char* fm = (unsigned char*)m_pDlgImage->m_image.GetBits();
+	int nWidth = m_pDlgImage->m_image.GetWidth();
+	int nHeight = m_pDlgImage->m_image.GetHeight();
+	int nPitch = m_pDlgImage->m_image.GetPitch();
+
+	int nTh = 0x80;
+	int nSumX = 0;
+	int nSumY = 0;
+	int nCount = 0;
+	CRect rect(0, 0, nWidth, nHeight);
+	for (int j = rect.top; j < rect.bottom; j++) {
+		for (int i = rect.left; i < rect.right; i++) {
+			if (fm[j*nPitch + i] > nTh) {
+				nSumX += i;
+				nSumY += j;
+				nCount++;
+			}
+		}
+	}
+	double dCenterX = (double)nSumX / nCount;
+	double dCenterY = (double)nSumY / nCount;
+
+	cout << dCenterX << "\t" << dCenterY << endl;
+
+	m_pDlgImage->Invalidate();
 }
